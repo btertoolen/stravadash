@@ -1,0 +1,10 @@
+[Unit]
+Description=Refresh the stravadash data
+Requires=stravadash.service
+
+[Timer]
+Unit=stravadash-restart.service
+OnCalendar=*:0/10
+
+[Install]
+WantedBy=timers.target

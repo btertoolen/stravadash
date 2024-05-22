@@ -1,0 +1,11 @@
+[Unit]
+Description=Strava Dashboard Service
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /root/stravadash/stravadash/app.py
+WorkingDirectory=/root/stravadash/stravadash
+User=root
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,12 @@
+[Unit]
+Description=Strava Dashboard restart Service
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c "/root/stravadash/stravago/backend/backend && /bin/systemctl restart stravadash.service"
+WorkingDirectory=/root/stravadash/stravago/backend
+User=root
+
+[Install]
+WantedBy=multi-user.target
