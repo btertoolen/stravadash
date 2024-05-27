@@ -142,7 +142,7 @@ def update_volumes(n):
         margin=dict(l=0, r=0, t=35, b=0)  # Reduce the empty space
 
     )
-    fig.update_yaxes(gridcolor='#FFB600', dtick=10000)
+    fig.update_yaxes(gridcolor='#FFB600', dtick=1000000)
     return fig
     # Update the totals-output div with the contents of the file
 

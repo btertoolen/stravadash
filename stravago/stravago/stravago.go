@@ -84,6 +84,7 @@ type Token struct {
 const api_base_url = "https://www.strava.com/api/v3"
 const get_athlete_url = "athletes"
 const athlete_id = 130630970
+const results_per_page = 200
 
 var bearer string
 
@@ -170,7 +171,7 @@ func GetAthleteRunningStats() []byte {
 }
 
 func GetAthleteActivities() string {
-	request_url := fmt.Sprintf("%s/%s/%d/activities", api_base_url, get_athlete_url, athlete_id)
+	request_url := fmt.Sprintf("%s/%s/%d/activities?per_page=%d", api_base_url, get_athlete_url, athlete_id, results_per_page)
 	println(request_url)
 	req, err := http.NewRequest("GET", request_url, nil)
 	if err != nil {
