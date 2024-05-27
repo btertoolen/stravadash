@@ -7,6 +7,7 @@ import plotly.express as px
 import pandas as pd
 import requests
 import json
+import polyline
 from plotly.subplots import make_subplots
 app = Dash(__name__)
 
@@ -36,6 +37,10 @@ app.layout = html.Div(children=[
         id='pace-hr-graph'
     ),
 
+    dcc.Graph(
+        id='running-map'
+    ),
+
     dcc.Interval(
         id='interval-update',
         interval=10000,
@@ -45,8 +50,31 @@ app.layout = html.Div(children=[
 ], style={'textAlign': 'center'})
 
 
-@callback(Output('total-table', 'children'),
-          Input('interval-update', 'n_intervals'))
+@ callback(Output('running-map', 'figure'),
+           Input('interval-update', 'n_intervals'))
+def update_running_map(n):
+    routes = ''
+    lats = []
+    lons = []
+    with open("../data/running_map.json", 'r') as f:
+        routes = json.load(f)
+    decoded_polylines = []
+    for item in routes['polylines']:
+        decoded_points = polyline.decode(item["line"])
+        for tuple in decoded_points:
+            lats.append(tuple[0])
+            lons.append(tuple[1])
+        lats.append(None)
+        lons.append(None)
+    df = pd.DataFrame(decoded_polylines, columns=['lat', 'lon'])
+    fig = px.line_mapbox(lat=lats, lon=lons, zoom=5.5)
+    fig.update_layout(mapbox_style="carto-darkmatter")
+    fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
+    return fig
+
+
+@ callback(Output('total-table', 'children'),
+           Input('interval-update', 'n_intervals'))
 def update_totals(n):
     totals = ''
     with open('../data/running_total.json', 'r') as f:
@@ -74,8 +102,8 @@ def update_totals(n):
     ]
 
 
-@callback(Output('volumes-graph', 'figure'),
-          Input('interval-update', 'n_intervals'))
+@ callback(Output('volumes-graph', 'figure'),
+           Input('interval-update', 'n_intervals'))
 def update_volumes(n):
     volumes = ''
     with open('../data/weekly_volumes.json', 'r') as f:
@@ -115,11 +143,12 @@ def update_volumes(n):
 
     )
     fig.update_yaxes(gridcolor='#FFB600', dtick=10000)
+    return fig
     # Update the totals-output div with the contents of the file
 
 
-@callback(Output('pace-hr-graph', 'figure'),
-          Input('interval-update', 'n_intervals'))
+@ callback(Output('pace-hr-graph', 'figure'),
+           Input('interval-update', 'n_intervals'))
 def update_pace_hr_graph(n):
     paces = ''
 

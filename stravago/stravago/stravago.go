@@ -255,3 +255,23 @@ func GetPaceAndHeartRate() string {
 	json_data += "]"
 	return json_data
 }
+
+func GetActivitiesOnMap() string {
+	input := GetAthleteActivities()
+	var data []Activity
+	err := json.Unmarshal([]byte(input), &data)
+	if err != nil {
+		fmt.Printf("Could not unmarshal json: %s\n", err)
+	}
+
+	json_data := "{ \"polylines\": ["
+
+	for _, activity := range data {
+		if activity.Map.SummaryPolyline != "" {
+			json_data += fmt.Sprintf("{ \"line\": %q },", activity.Map.SummaryPolyline)
+		}
+	}
+	json_data = json_data[:len(json_data)-1]
+	json_data += "]}"
+	return json_data
+}

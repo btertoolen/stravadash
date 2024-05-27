@@ -13,8 +13,16 @@ type Config struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
+func writeToFile(path string, data []byte) {
+	f, err := os.Create(path)
+	if err != nil {
+		panic(err)
+	}
+	f.Write(data)
+	f.Close()
+}
+
 func main() {
-	// Read json from ../../user/bram.json
 	f, err := os.Open("../../user/bram.json")
 	if err != nil {
 		panic(err)
@@ -43,33 +51,26 @@ func main() {
 	f.Close()
 
 	volume_result := stravago.GetWeeklyVolumes()
-	f, err = os.Create("../../data/weekly_volumes.json")
-	if err != nil {
-		panic(err)
-	}
 	if volume_result == "" {
 		panic("volume_result is empty")
 	}
-	f.Write([]byte(volume_result))
+	writeToFile("../../data/weekly_volumes.json", []byte(volume_result))
 
 	pace_hr_result := stravago.GetPaceAndHeartRate()
-	f, err = os.Create("../../data/pace_hr.json")
-	if err != nil {
-		panic(err)
-	}
 	if len(pace_hr_result) < 50 {
 		panic("received empty pace_hr data")
 	}
-	f.Write([]byte(pace_hr_result))
+	writeToFile("../../data/pace_hr.json", []byte(pace_hr_result))
 
 	totals := stravago.GetAthleteRunningStats()
-	f, err = os.Create("../../data/running_total.json")
-	if err != nil {
-		panic(err)
-	}
 	if len(totals) < 50 {
 		panic("received empty running totals")
 	}
-	f.Write(totals)
+	writeToFile("../../data/running_total.json", totals)
 
+	map_lines := stravago.GetActivitiesOnMap()
+	if len(map_lines) < 50 {
+		panic("receied empty running map")
+	}
+	writeToFile("../../data/running_map.json", []byte(map_lines))
 }
